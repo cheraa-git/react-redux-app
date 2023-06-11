@@ -13,3 +13,10 @@ export const titleChanged = (id) => {
     payload: { id, title: `New Title for ${id}` }
   }
 }
+
+export const taskDeleted = (id) => {
+  return {
+    type: actionTypes.TASK_DELETED,
+    payload: { id }
+  }
+}
