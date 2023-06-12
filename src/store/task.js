@@ -20,6 +20,9 @@ const taskSlice = createSlice({
       const elementIndex = state.entities.findIndex(el => el.id === action.payload.id)
       state.entities[elementIndex] = { ...state.entities[elementIndex], ...action.payload }
     },
+    add(state, action) {
+      state.entities.unshift(action.payload)
+    },
     remove(state, action) {
       state.entities = state.entities.filter(el => el.id !== action.payload.id)
     },
@@ -28,13 +31,16 @@ const taskSlice = createSlice({
     },
     taskRequestFailed(state) {
       state.isLoading = false
+    },
+    setLoading(state, action) {
+      state.isLoading = action.payload
     }
 
   }
 })
 
 
-const { remove, update, received, taskRequestFailed, taskRequested } = taskSlice.actions
+const { remove, update, received, taskRequestFailed, taskRequested, add, setLoading } = taskSlice.actions
 const taskReducer = taskSlice.reducer
 
 export const loadTasks = () => async (dispatch) => {
@@ -42,6 +48,21 @@ export const loadTasks = () => async (dispatch) => {
   try {
     const data = await todosService.fetch()
     dispatch(received(data))
+  } catch (error) {
+    dispatch(taskRequestFailed())
+    dispatch(setError(error.message))
+  }
+}
+
+export const createTask = () => async (dispatch) => {
+  dispatch(taskRequested())
+  try {
+    const data = await todosService.create({
+      title: `Random task № ${Math.floor(Math.random() * 100)}`,
+      completed: false,
+    })
+    dispatch(add(data))
+    dispatch(setLoading(false))
   } catch (error) {
     dispatch(taskRequestFailed())
     dispatch(setError(error.message))
