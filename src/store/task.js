@@ -20,11 +20,11 @@ const taskSlice = createSlice({
       const elementIndex = state.entities.findIndex(el => el.id === action.payload.id)
       state.entities[elementIndex] = { ...state.entities[elementIndex], ...action.payload }
     },
-    add(state, action) {
+    addTask(state, action) {
       state.entities.unshift(action.payload)
     },
-    remove(state, action) {
-      state.entities = state.entities.filter(el => el.id !== action.payload.id)
+    removeTask(state, action) {
+      state.entities = state.entities.filter(el => el.id !== action.payload)
     },
     taskRequested(state) {
       state.isLoading = true
@@ -40,7 +40,7 @@ const taskSlice = createSlice({
 })
 
 
-const { remove, update, received, taskRequestFailed, taskRequested, add, setLoading } = taskSlice.actions
+export const { removeTask, update, received, taskRequestFailed, taskRequested, addTask, setLoading } = taskSlice.actions
 const taskReducer = taskSlice.reducer
 
 export const loadTasks = () => async (dispatch) => {
@@ -61,7 +61,7 @@ export const createTask = () => async (dispatch) => {
       title: `Random task № ${Math.floor(Math.random() * 100)}`,
       completed: false,
     })
-    dispatch(add(data))
+    dispatch(addTask(data))
     dispatch(setLoading(false))
   } catch (error) {
     dispatch(taskRequestFailed())
@@ -75,10 +75,6 @@ export const completeTask = (id) => (dispatch) => {
 
 export const changeTitle = (id) => (dispatch) => {
   dispatch(update({ id, title: `New Title for ${id}` }))
-}
-
-export const removeTask = (id) => (dispatch) => {
-  dispatch(remove({ id }))
 }
 
 export const getTasks = () => state => state.task.entities
