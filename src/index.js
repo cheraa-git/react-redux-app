@@ -1,37 +1,25 @@
 import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import createStore from './store/store'
-import { completeTask, getTasks, taskDeleted, titleChanged } from './store/task'
+import { changeTitle, completeTask, getTasks, getTasksLoadingStatus, loadTasks, removeTask } from './store/task'
 import { Provider, useDispatch, useSelector } from 'react-redux'
+import { getError } from './store/errors'
 
 const store = createStore()
 
 const App = () => {
   const dispatch = useDispatch()
-  const { entities: tasks, isLoading, } = useSelector(state => state.task)
-  const { entities: error } = useSelector(state => state.error)
+  const tasks = useSelector(getTasks())
+  const isLoading = useSelector(getTasksLoadingStatus())
+  const errors = useSelector(getError())
 
   useEffect(() => {
-    dispatch(getTasks())
+    dispatch(loadTasks())
   }, [dispatch])
 
 
-  const changeTitle = (id) => {
-    dispatch(titleChanged(id))
-  }
-
-  const deleteTask = (id) => {
-    dispatch(taskDeleted(id))
-  }
-
-  if (isLoading) {
-    return <h1>Loading...</h1>
-  }
-
-  if (error[0]) {
-    return <p>{error}</p>
-  }
-
+  if (isLoading) return <h1>Loading...</h1>
+  if (errors[0]) return <p>{errors[0]}</p>
   return (
     <>
       <h1>App</h1>
@@ -42,8 +30,8 @@ const App = () => {
             <p>{el.title}</p>
             <p>Completed: {`${el.completed}`}</p>
             <button onClick={() => dispatch(completeTask(el.id))}>complete</button>
-            <button onClick={() => changeTitle(el.id)}>change title</button>
-            <button onClick={() => deleteTask(el.id)}>delete</button>
+            <button onClick={() => dispatch(changeTitle(el.id))}>change title</button>
+            <button onClick={() => dispatch(removeTask(el.id))}>remove</button>
             <hr/>
           </li>
         )}

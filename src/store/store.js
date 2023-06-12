@@ -5,7 +5,7 @@ import errorReducer from './errors'
 
 
 const rootReducer = combineReducers({
-  error: errorReducer,
+  errors: errorReducer,
   task: taskReducer
 })
 
