@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const http = axios.create({
-  baseURL: 'https://js1onplaceholder.typicode.com/'
+  baseURL: 'https://jsonplaceholder.typicode.com/'
 })
 
 const httpService = {
