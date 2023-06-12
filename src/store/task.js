@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
 import todosService from '../services/todos.service'
+import { setError } from './errors'
 
 const initialState = {
   entities: [],
   isLoading: true,
-  error: null
 }
 
 
@@ -26,8 +26,7 @@ const taskSlice = createSlice({
     taskRequested(state) {
       state.isLoading = true
     },
-    taskRequestFailed(state, action) {
-      state.error = action.payload
+    taskRequestFailed(state) {
       state.isLoading = false
     }
 
@@ -44,11 +43,12 @@ export const getTasks = () => async (dispatch) => {
     const data = await todosService.fetch()
     dispatch(received(data))
   } catch (error) {
-    dispatch(taskRequestFailed('Network Error'))
+    dispatch(taskRequestFailed())
+    dispatch(setError(error.message))
   }
 }
 
-export const completeTask = (id) => (dispatch, getState) => {
+export const completeTask = (id) => (dispatch) => {
   dispatch(update({ id, completed: true }))
 }
 

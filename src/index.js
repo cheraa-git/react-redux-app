@@ -8,11 +8,12 @@ const store = createStore()
 
 const App = () => {
   const dispatch = useDispatch()
-  const { entities, isLoading, error } = useSelector(state => state)
+  const { entities: tasks, isLoading, } = useSelector(state => state.task)
+  const { entities: error } = useSelector(state => state.error)
 
   useEffect(() => {
     dispatch(getTasks())
-  }, [])
+  }, [dispatch])
 
 
   const changeTitle = (id) => {
@@ -27,8 +28,8 @@ const App = () => {
     return <h1>Loading...</h1>
   }
 
-  if (error) {
-    return  <p>{error}</p>
+  if (error[0]) {
+    return <p>{error}</p>
   }
 
   return (
@@ -36,7 +37,7 @@ const App = () => {
       <h1>App</h1>
 
       <ul>
-        {entities.map(el =>
+        {tasks.map(el =>
           <li key={el.id}>
             <p>{el.title}</p>
             <p>Completed: {`${el.completed}`}</p>
