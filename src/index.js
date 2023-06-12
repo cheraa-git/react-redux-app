@@ -1,27 +1,34 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import createStore from './store/store'
 import { completeTask, getTasks, taskDeleted, titleChanged } from './store/task'
+import { Provider, useDispatch, useSelector } from 'react-redux'
 
 const store = createStore()
 
 const App = () => {
-  const [state, setState] = useState(store.getState())
+  const dispatch = useDispatch()
+  const { entities, isLoading, error } = useSelector(state => state)
 
   useEffect(() => {
-    store.dispatch(getTasks())
-    store.subscribe(() => setState(store.getState))
+    dispatch(getTasks())
   }, [])
 
 
   const changeTitle = (id) => {
-    store.dispatch((dispatch, getState) => {
-      store.dispatch(titleChanged(id))
-    })
+    dispatch(titleChanged(id))
   }
 
   const deleteTask = (id) => {
-    store.dispatch(taskDeleted(id))
+    dispatch(taskDeleted(id))
+  }
+
+  if (isLoading) {
+    return <h1>Loading...</h1>
+  }
+
+  if (error) {
+    return  <p>{error}</p>
   }
 
   return (
@@ -29,11 +36,11 @@ const App = () => {
       <h1>App</h1>
 
       <ul>
-        {state.map(el =>
+        {entities.map(el =>
           <li key={el.id}>
             <p>{el.title}</p>
             <p>Completed: {`${el.completed}`}</p>
-            <button onClick={() => store.dispatch(completeTask(el.id))}>complete</button>
+            <button onClick={() => dispatch(completeTask(el.id))}>complete</button>
             <button onClick={() => changeTitle(el.id)}>change title</button>
             <button onClick={() => deleteTask(el.id)}>delete</button>
             <hr/>
@@ -46,5 +53,7 @@ const App = () => {
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <App/>
+  <Provider store={store}>
+    <App/>
+  </Provider>
 )
