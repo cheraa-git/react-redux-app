@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import configureStore from './store/store'
-import { taskCompleted, taskDeleted, titleChanged } from './store/task'
+import { completeTask, taskDeleted, titleChanged } from './store/task'
 
 const store = configureStore()
 
@@ -12,12 +12,12 @@ const App = () => {
     store.subscribe(() => setState(store.getState))
   }, [])
 
-  const completeTask = (id) => {
-    store.dispatch(taskCompleted(id))
-  }
 
   const changeTitle = (id) => {
-    store.dispatch(titleChanged(id))
+    store.dispatch((dispatch, getState) => {
+      console.log(dispatch, getState)
+      store.dispatch(titleChanged(id))
+    })
   }
 
   const deleteTask = (id) => {
@@ -33,7 +33,7 @@ const App = () => {
           <li key={el.id}>
             <p>{el.title}</p>
             <p>Completed: {`${el.completed}`}</p>
-            <button onClick={() => completeTask(el.id)}>complete</button>
+            <button onClick={() => store.dispatch(completeTask(el.id))}>complete</button>
             <button onClick={() => changeTitle(el.id)}>change title</button>
             <button onClick={() => deleteTask(el.id)}>delete</button>
             <hr/>
